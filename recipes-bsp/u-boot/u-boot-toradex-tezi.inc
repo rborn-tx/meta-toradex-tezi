@@ -63,3 +63,5 @@ do_deploy:append() {
         unset  i
     fi
 }
+
+require ${@ 'u-boot-toradex-tezi-raw-flashing.inc' if 'tezi-raw-flashing' in d.getVar('OVERRIDES').split(':') else ''}

@@ -5,3 +5,7 @@ FASTBOOT_DEVICE_FRAG:verdin-imx8mp ?= "file://fb-dev2.cfg"
 SRC_URI:append = " \
     ${FASTBOOT_DEVICE_FRAG} \
 "
+
+SRC_URI:append:imx-generic-bsp = " \
+    file://fb-malloc.cfg \
+"

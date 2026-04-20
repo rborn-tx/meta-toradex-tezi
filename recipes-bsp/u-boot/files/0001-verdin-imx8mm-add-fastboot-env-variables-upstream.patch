@@ -1,0 +1,70 @@
+From 70b13806ef9853da053773380664cfea8b314ea9 Mon Sep 17 00:00:00 2001
+From: Rogerio Guerra Borin <rogerio.borin@toradex.com>
+Date: Sun, 26 Apr 2026 16:57:24 -0300
+Subject: [PATCH] verdin-imx8mm: add fastboot env variables (upstream)
+
+Add some U-Boot environment variables to simplify flashing via Fastboot:
+
+- fastboot_partition_alias_all,
+  fastboot_raw_partition_bootloader:
+  Variables utilized by standard/built-in UUU flashing scripts; they
+  allow users to specify the names "all" and "bootloader" in the
+  flash command.
+  For the bootloader partition, a raw definition is used to deal with
+  the needed non-zero offset.
+- emmc_dev, emmc_ack:
+  These are also utilized by standard/built-in UUU flashing scripts;
+  the former indicates the eMMC device to be used with flashing and
+  the latter indicates if the device requires an ACK during boot (info
+  passed to the "mmc partconf" command when configuring the device).
+- fastboot_default_buf_addr, fastboot_default_buf_size:
+  Additional variables indicating the location and size of the default
+  Fastboot buffer; this helps avoid the need for users to hard-code
+  these pieces of information in their flashing scripts.
+
+Upstream-Status: Inappropriate [Toradex specific]
+Signed-off-by: Rogerio Guerra Borin <rogerio.borin@toradex.com>
+---
+ include/configs/verdin-imx8mm.h | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+diff --git a/include/configs/verdin-imx8mm.h b/include/configs/verdin-imx8mm.h
+index 12d2b682305..faaebfe64f9 100644
+--- a/include/configs/verdin-imx8mm.h
++++ b/include/configs/verdin-imx8mm.h
+@@ -26,6 +26,24 @@
+ 	"ramdisk_addr_r=0x50300000\0" \
+ 	"scriptaddr=0x50280000\0"
+ 
++#ifdef CONFIG_FASTBOOT_FLASH
++# ifndef CONFIG_FASTBOOT_FLASH_MMC_DEV
++#  error CONFIG_FASTBOOT_FLASH_MMC_DEV must be defined
++# endif
++#define FASTBOOT_ENV_SETTINGS \
++	"fastboot_partition_alias_all=" \
++		__stringify(CONFIG_FASTBOOT_FLASH_MMC_DEV) ".0:0\0" \
++	"fastboot_raw_partition_bootloader=0x2 0x1ffe mmcpart 1\0" \
++	"fastboot_default_buf_addr=" \
++		__stringify(CONFIG_FASTBOOT_BUF_ADDR) "\0" \
++	"fastboot_default_buf_size=" \
++		__stringify(CONFIG_FASTBOOT_BUF_SIZE) "\0" \
++	"emmc_dev=" __stringify(CONFIG_FASTBOOT_FLASH_MMC_DEV) "\0" \
++	"emmc_ack=1\0"
++#else
++#define FASTBOOT_ENV_SETTINGS
++#endif
++
+ /* Enable Distro Boot */
+ #define BOOT_TARGET_DEVICES(func) \
+ 	func(MMC, mmc, 1) \
+@@ -37,6 +55,7 @@
+ #define CFG_EXTRA_ENV_SETTINGS \
+ 	BOOTENV \
+ 	MEM_LAYOUT_ENV_SETTINGS \
++	FASTBOOT_ENV_SETTINGS \
+ 	"boot_script_dhcp=boot.scr\0" \
+ 	"console=ttymxc0\0" \
+ 	"fdt_board=dev\0" \
+-- 
+2.43.0
+

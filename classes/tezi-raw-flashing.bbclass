@@ -1,0 +1,1 @@
+DISTROOVERRIDES .= ":tezi-raw-flashing"

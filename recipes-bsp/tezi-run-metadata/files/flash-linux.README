@@ -1,0 +1,16 @@
+The script flash-linux.sh allows flashing raw (WIC) images onto a device via
+a USB connection. It is meant to be executed on a host computer running a
+GNU/Linux distro. The communication with the device initially uses the SDP
+protocol for loading a special version of U-Boot which in turn provides
+flashing capabilities via the Fastboot protocol.
+
+If the script does not work out of the box, you might have to manually
+install the appropriate libraries.
+
+For a Debian based distro, run the following command:
+
+$ sudo apt install libudev1 libusb-1.0-0
+
+To learn how to use the script, execute:
+
+$ ./flash-linux.sh --help

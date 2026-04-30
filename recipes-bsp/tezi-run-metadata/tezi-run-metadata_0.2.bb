@@ -69,3 +69,5 @@ addtask deploy before do_build after do_install
 COMPATIBLE_MACHINE = "(apalis|aquila|colibri|verdin|toradex|lino)"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
+
+require ${@ 'tezi-run-metadata-raw-flashing.inc' if 'tezi-raw-flashing' in d.getVar('OVERRIDES').split(':') else ''}

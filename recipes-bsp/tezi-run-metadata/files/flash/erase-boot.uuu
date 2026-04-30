@@ -1,0 +1,17 @@
+
+# Ensure required variables are set in the U-Boot environment:
+FB: ucmd test -n "${fastboot_partition_alias_all}"
+FB: ucmd test -n "${fastboot_partition_alias_bootloader}${fastboot_raw_partition_bootloader}"
+FB: ucmd test -n "${emmc_dev}"
+FB: ucmd test -n "${emmc_ack}"
+
+# Select 1st boot partition, erase it all except the last block containing
+# the Toradex Config Block:
+FB: ucmd echo "=="; echo "== Erasing 1st boot partition"; echo "=="
+FB: ucmd mmc dev "${emmc_dev}" 1 && mmc erase 0 1fff
+
+# Select 2nd boot partition, erase it all:
+FB: ucmd echo "=="; echo "== Erasing 2nd boot partition"; echo "=="
+FB: ucmd mmc dev "${emmc_dev}" 2 && mmc erase 0 2000
+
+FB: done

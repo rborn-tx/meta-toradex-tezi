@@ -1,0 +1,12 @@
+
+# Ensure required variables are set in the U-Boot environment:
+FB: ucmd test -n "${fastboot_partition_alias_all}"
+FB: ucmd test -n "${fastboot_partition_alias_bootloader}${fastboot_raw_partition_bootloader}"
+FB: ucmd test -n "${emmc_dev}"
+FB: ucmd test -n "${emmc_ack}"
+
+# Erase user data partition:
+FB: ucmd echo "=="; echo "== Erasing user data (all) partition"; echo "=="
+FB[-t 120000]: erase all
+
+FB: done

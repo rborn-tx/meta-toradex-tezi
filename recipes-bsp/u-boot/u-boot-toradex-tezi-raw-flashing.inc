@@ -7,6 +7,10 @@ FASTBOOT_DEVICE_FRAG:verdin-imx8mm ?= "file://fb-dev0.cfg"
 FASTBOOT_DEVICE_FRAG:verdin-imx8mp ?= "file://fb-dev2.cfg"
 
 FASTBOOT_PATCHES_UPSTREAM = " \
+    file://0001-apalis-imx6-add-fastboot-env-variables-upstream.patch \
+    file://0001-colibri-imx6-add-fastboot-env-variables-upstream.patch \
+    file://0001-colibri-imx6ull-add-fastboot-env-variables-upstream.patch \
+    file://0001-colibri-imx7-add-fastboot-env-variables-upstream.patch \
     file://0001-verdin-imx8mm-add-fastboot-env-variables-upstream.patch \
     file://0001-verdin-imx8mp-add-fastboot-env-variables-upstream.patch \
 "
@@ -31,6 +35,10 @@ SRC_URI:append:imx-generic-bsp = " \
 "
 
 RAW_FLASHING_SUPPORTED ?= "0"
+RAW_FLASHING_SUPPORTED:apalis-imx6 ?= "1"
+RAW_FLASHING_SUPPORTED:colibri-imx6 ?= "1"
+RAW_FLASHING_SUPPORTED:colibri-imx6ull ?= "1"
+RAW_FLASHING_SUPPORTED:colibri-imx7 ?= "1"
 RAW_FLASHING_SUPPORTED:verdin-imx8mm ?= "1"
 RAW_FLASHING_SUPPORTED:verdin-imx8mp ?= "1"
 

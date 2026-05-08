@@ -1,4 +1,8 @@
 FASTBOOT_DEVICE_FRAG ?= ""
+FASTBOOT_DEVICE_FRAG:apalis-imx6 ?= "file://fb-dev0.cfg"
+FASTBOOT_DEVICE_FRAG:colibri-imx6 ?= "file://fb-dev0.cfg"
+FASTBOOT_DEVICE_FRAG:colibri-imx6ull ?= "file://fb-dev0.cfg"
+FASTBOOT_DEVICE_FRAG:colibri-imx7 ?= "file://fb-dev0.cfg"
 FASTBOOT_DEVICE_FRAG:verdin-imx8mm ?= "file://fb-dev0.cfg"
 FASTBOOT_DEVICE_FRAG:verdin-imx8mp ?= "file://fb-dev2.cfg"
 

@@ -23,3 +23,7 @@ TDX_SECBOOT_REQUIRED_BOOTARGS = "${TEZI_SECBOOT_REQUIRED_BOOTARGS}"
 #   erased.
 #
 TDX_SECBOOT_WL_ALLOW_CLOSED_CATEG_DEFAULT = "CMD_CAT_ALL_SAFE CMD_CAT_MMC_CONTROL CMD_CAT_MMC_WRITE"
+
+# Use default target which is enough to produce sign-able binaries for secboot:
+UBOOT_MAKE_TARGET:apalis-imx6 = ""
+UBOOT_MAKE_TARGET:colibri-imx6 = ""

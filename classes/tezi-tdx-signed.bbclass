@@ -27,3 +27,13 @@ TDX_SECBOOT_WL_ALLOW_CLOSED_CATEG_DEFAULT = "CMD_CAT_ALL_SAFE CMD_CAT_MMC_CONTRO
 # Use default target which is enough to produce sign-able binaries for secboot:
 UBOOT_MAKE_TARGET:apalis-imx6 = ""
 UBOOT_MAKE_TARGET:colibri-imx6 = ""
+
+# Do not generate or deploy signed bootloader for "rawnand".
+UBOOT_CONFIG:remove:colibri-imx6ull = "rawnand"
+UBOOT_CONFIG:remove:colibri-imx7 = "rawnand"
+TORADEX_FLASH_TYPE:remove:colibri-imx6ull = "rawnand"
+TORADEX_FLASH_TYPE:remove:colibri-imx7 = "rawnand"
+
+# Use eMMC defconfig as base to have proper support for eMMC flashing.
+UBOOT_CONFIG_BASENAME:colibri-imx6ull = "colibri-imx6ull-emmc"
+UBOOT_CONFIG_BASENAME:colibri-imx7 = "colibri_imx7_emmc"

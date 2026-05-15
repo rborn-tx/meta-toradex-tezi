@@ -5,13 +5,21 @@ FB: ucmd test -n "${fastboot_partition_alias_bootloader}${fastboot_raw_partition
 FB: ucmd test -n "${emmc_dev}"
 FB: ucmd test -n "${emmc_ack}"
 
-# Select 1st boot partition, erase it all except the last block containing
-# the Toradex Config Block:
+# Select 1st boot partition, erase it all except the last block (sector)
+# containing the Toradex Config Block.
+#
+# Most devices have a 4MB boot hw partition but some have only 2MB; to deal
+# with this, do not erase the last block at the end of 4MB and 2MB.
+#
 FB: ucmd echo "=="; echo "== Erasing 1st boot partition"; echo "=="
-FB: ucmd mmc dev "${emmc_dev}" 1 && mmc erase 0 1fff
+FB: ucmd mmc dev "${emmc_dev}" 1
+FB: ucmd mmc erase 0x0000 0x0fff
+FB: ucmd mmc erase 0x1000 0x0fff
 
 # Select 2nd boot partition, erase it all:
 FB: ucmd echo "=="; echo "== Erasing 2nd boot partition"; echo "=="
-FB: ucmd mmc dev "${emmc_dev}" 2 && mmc erase 0 2000
+FB: ucmd mmc dev "${emmc_dev}" 2
+FB: ucmd mmc erase 0x0000 0x1000
+FB: ucmd mmc erase 0x1000 0x1000
 
 FB: done

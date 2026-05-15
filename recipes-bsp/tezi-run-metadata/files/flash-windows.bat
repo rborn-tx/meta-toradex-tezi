@@ -8,8 +8,10 @@ set "ERASE_USER=1"
 set "UUU_ARGS="
 set "WIC_IMG="
 set "BL_IMG="
+set "SPL_IMG="
 set "WIC_IMG_LINK=wic-image.lnk"
 set "BL_IMG_LINK=bootloader.lnk"
+set "SPL_IMG_LINK=spl-image.lnk"
 
 :parse_args
 if "%~1"=="" goto after_args
@@ -23,6 +25,12 @@ if "%~1"=="" goto after_args
     )
     if /I "%~1"=="--bootloader" (
         set "BL_IMG=%~2"
+        shift
+        shift
+        goto parse_args
+    )
+    if /I "%~1"=="--spl" (
+        set "SPL_IMG=%~2"
         shift
         shift
         goto parse_args
@@ -86,6 +94,13 @@ if not exist "%BL_IMG%" (
 )
 copy /Y "%WIC_IMG%" "%WIC_IMG_LINK%" >nul
 copy /Y "%BL_IMG%" "%BL_IMG_LINK%" >nul
+if not "%SPL_IMG%"=="" (
+    if not exist "%SPL_IMG%" (
+        echo SPL image "%SPL_IMG%" not found - aborting.
+        exit /b 1
+    )
+    copy /Y "%SPL_IMG%" "%SPL_IMG_LINK%" >nul
+)
 
 call :hdr "Loading bootloader and entering Fastboot mode..."
 call :run_uuu "flash\fastboot.uuu"
@@ -103,11 +118,16 @@ if "%ERASE_USER%"=="1" (
     if errorlevel 1 goto exit_error
 )
 
-call :hdr "Flashing device..."
+if not "%SPL_IMG%"=="" (
+    call :hdr "Flashing SPL..."
+    call :run_uuu "flash\flash-spl.uuu"
+    if errorlevel 1 goto exit_error
+)
+call :hdr "Flashing bootloader and WIC images..."
 call :run_uuu "flash\flash-all.uuu"
 if errorlevel 1 goto exit_error
 
-del /Q "%WIC_IMG_LINK%" "%BL_IMG_LINK%" 2>nul
+del /Q "%WIC_IMG_LINK%" "%BL_IMG_LINK%" "%SPL_IMG_LINK%" 2>nul
 
 call :hdr "Flashing was successful!"
 exit /b 0
@@ -116,6 +136,7 @@ exit /b 0
 echo Usage: flash-linux.bat [-q^-v]
 echo.                   [--erase-user ^| --no-erase-user]
 echo.                   [--erase-boot ^| --no-erase-boot]
+echo.                   [--spl SPL_IMAGE]
 echo.                   --wic WIC_IMAGE --bootloader BOOTLOADER_IMAGE
 echo.
 echo Mandatory switches:
@@ -129,6 +150,7 @@ echo.    --erase-user^|--no-erase-user
 echo.                   Whether or not to erase the user data partition before flashing.
 echo.    --erase-boot^|--no-erase-boot
 echo.                   Whether or not to erase the boot partitions.
+echo.    --spl          Path to SPL image to flash (optional).
 exit /b 0
 
 :hdr
@@ -152,5 +174,5 @@ exit /b %ERRORLEVEL%
 
 :exit_error
 echo ERROR: Failed to flash device.
-del /Q "%WIC_IMG_LINK%" "%BL_IMG_LINK%" 2>nul
+del /Q "%WIC_IMG_LINK%" "%BL_IMG_LINK%" "%SPL_IMG_LINK%" 2>nul
 exit /b 1

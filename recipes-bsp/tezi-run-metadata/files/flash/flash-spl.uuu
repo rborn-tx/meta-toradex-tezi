@@ -1,0 +1,13 @@
+
+# Ensure required variables are set in the U-Boot environment:
+FB: ucmd test -n "${fastboot_partition_alias_spl}${fastboot_raw_partition_spl}"
+FB: ucmd test -n "${fastboot_default_buf_addr}"
+FB: ucmd test -n "${fastboot_default_buf_size}"
+FB: ucmd test -n "${emmc_dev}"
+FB: ucmd test -n "${emmc_ack}"
+
+# Flash SPL:
+FB: ucmd echo "=="; echo "== Flashing SPL..."; echo "=="
+FB[-t 30000]: flash -scanterm -scanlimited 0x800000 spl ../spl-image.lnk
+
+FB: done

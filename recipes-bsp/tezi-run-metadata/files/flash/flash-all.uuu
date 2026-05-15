@@ -7,7 +7,7 @@ FB: ucmd test -n "${fastboot_default_buf_size}"
 FB: ucmd test -n "${emmc_dev}"
 FB: ucmd test -n "${emmc_ack}"
 
-# Flash main OS image:
+# Flash WIC  image (containing the OS):
 FB: ucmd echo "=="; echo "== Flashing WIC image..."; echo "=="
 FB[-t 300000]: flash -raw2sparse all ../wic-image.lnk
 

@@ -7,6 +7,7 @@ SRC_URI:append = " \
     file://flash/erase-boot.uuu \
     file://flash/erase-user.uuu \
     file://flash/flash-all.uuu \
+    file://flash/flash-spl.uuu \
 "
 
 do_deploy:append:tezi-raw-flashing() {
@@ -31,7 +32,7 @@ do_deploy:append:tezi-raw-flashing() {
         cat ${WORKDIR}/flash/fastboot.uuu
     } >> ${TEZI_RUN_DEPLOYDIR}/flash/fastboot.uuu
 
-    for fname in "erase-boot.uuu" "erase-user.uuu" "flash-all.uuu"; do
+    for fname in "erase-boot.uuu" "erase-user.uuu" "flash-all.uuu" "flash-spl.uuu"; do
         install -m 644 /dev/null ${TEZI_RUN_DEPLOYDIR}/flash/${fname}
         {
             sed -n -e "1p" -e "${cfglinenum}p" ${WORKDIR}/recovery/uuu.auto

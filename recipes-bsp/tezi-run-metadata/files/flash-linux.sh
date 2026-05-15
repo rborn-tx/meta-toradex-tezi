@@ -9,13 +9,16 @@ UUU_ARGS=${UUU_ARGS-""}
 
 WIC_IMG_LINK="./wic-image.lnk"
 BL_IMG_LINK="./bootloader.lnk"
+SPL_IMG_LINK="./spl-image.lnk"
 
 help() {
     cat <<EOF
 Usage: flash-linux.sh [-q|-v]
                       [--erase-user|--no-erase-user]
                       [--erase-boot|--no-erase-boot]
-                      --wic WIC_IMAGE --bootloader BOOTLOADER_IMAGE
+                      [--spl SPL_IMAGE]
+                      --wic WIC_IMAGE
+                      --bootloader BOOTLOADER_IMAGE
 
 Mandatory switches:
     --wic          Path to WIC image to flash.
@@ -29,6 +32,7 @@ Optional switches:
                    before flashing the WIC image into it.
     --erase-boot|--no-erase-boot
                    Whether or not to erase the boot parititions.
+    --spl          Path to SPL image to flash (optional).
 
 Examples:
     # Recommended usage when re-flashing a device:
@@ -43,12 +47,12 @@ EOF
 
 hdr() {
     if [ -t 1 ]; then
-	printf "= \033[93m$*\033[0m\n"
+        printf "= \033[93m$*\033[0m\n"
     else
-	echo "=" "$*"
+        echo "=" "$*"
     fi
     if [ "${VERBOSITY}" -ge 2 ]; then
-	echo ""
+        echo ""
     fi
 }
 
@@ -58,11 +62,11 @@ run_uuu() {
     elif [ "${VERBOSITY}" -eq 2 ]; then
         ${DRY:+echo "WOULD RUN:"} ${SUDO} ./recovery/uuu ${UUU_ARGS} "$@"
     else
-	if [ -z "${DRY}" ]; then
+        if [ -z "${DRY}" ]; then
             ${SUDO} ./recovery/uuu ${UUU_ARGS} "$@" > /dev/null
-	else
+        else
             echo "WOULD RUN:" ${SUDO} ./recovery/uuu ${UUU_ARGS} "$@"
-	fi
+        fi
     fi
 }
 
@@ -79,6 +83,13 @@ make_links() {
 
     ln -sf "${WIC_IMG}" "${WIC_IMG_LINK}"
     ln -sf "${BL_IMG}" "${BL_IMG_LINK}"
+    if [ -n "${SPL_IMG}" ]; then
+        if [ ! -e "${SPL_IMG}" ]; then
+            echo "SPL image '${SPL_IMG}' not found - aborting." >&2
+            return 1
+        fi
+        ln -sf "${SPL_IMG}" "${SPL_IMG_LINK}"
+    fi
 
     return 0
 }
@@ -86,6 +97,7 @@ make_links() {
 clear_links() {
     rm -f "${WIC_IMG_LINK}"
     rm -f "${BL_IMG_LINK}"
+    rm -f "${SPL_IMG_LINK}"
 }
 
 exit_error() {
@@ -108,6 +120,10 @@ while [ "$#" -gt 0 ]; do
             BL_IMG="$2"
             shift 2
             ;;
+        --spl)
+            SPL_IMG="$2"
+            shift 2
+            ;;
         --erase-user)
             ERASE_USER="1"
             shift
@@ -126,14 +142,14 @@ while [ "$#" -gt 0 ]; do
             ;;
         -q)
             VERBOSITY="1"
-	    shift
+            shift
             ;;
         -v)
             VERBOSITY="3"
-	    shift
+            shift
             ;;
         *)
-	    help
+            help
             exit_error "Invalid option '$1'"
             ;;
     esac
@@ -160,8 +176,12 @@ if [ "${ERASE_USER}" = "1" ]; then
     run_uuu flash/erase-user.uuu || exit_error "Couldn't erase user data partition"
 fi
 
-hdr "Flashing device..."
-run_uuu flash/flash-all.uuu || exit_error "Couldn't flash images"
+if [ -n "${SPL_IMG}" ]; then
+    hdr "Flashing SPL..."
+    run_uuu flash/flash-spl.uuu || exit_error "Couldn't flash SPL"
+fi
+hdr "Flashing bootloader and WIC images..."
+run_uuu flash/flash-all.uuu || exit_error "Couldn't flash bootloader and/or WIC image"
 
 clear_links
 

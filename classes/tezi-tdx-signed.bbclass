@@ -37,3 +37,7 @@ TORADEX_FLASH_TYPE:remove:colibri-imx7 = "rawnand"
 # Use eMMC defconfig as base to have proper support for eMMC flashing.
 UBOOT_CONFIG_BASENAME:colibri-imx6ull = "colibri-imx6ull-emmc"
 UBOOT_CONFIG_BASENAME:colibri-imx7 = "colibri_imx7_emmc"
+
+# Undo the override done by distro/tezi.conf:
+UBOOT_MAKE_TARGET:colibri-imx6ull:forcevariable = "u-boot.imx"
+UBOOT_MAKE_TARGET:colibri-imx7:forcevariable = "u-boot.imx"
